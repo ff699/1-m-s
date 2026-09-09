@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Para a Mari</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #f7efe0;
+    --paper-shadow: #e5d3b8;
+    --ink: #3a2436;
+    --ink-soft: #5a4152;
+    --wine: #a13d55;
+    --wine-deep: #7c2d40;
+    --gold: #c69a4d;
+    --blush: #f1d9d6;
+  }
+
+  *{ box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body{ margin: 0; min-height: 100%; }
+
+  body{
+    font-family: 'Fraunces', serif;
+    color: var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, #fbeee7 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #f4e2da 0%, transparent 50%),
+      linear-gradient(160deg, #f3e2d8 0%, #ead6cf 45%, #e7cfd6 100%);
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before{
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .05;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- ENVELOPE ---------- */
+  #envelopeScreen{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .envelope{
+    position: relative;
+    width: min(260px, 72vw);
+    height: 172px;
+    background: var(--paper);
+    box-shadow:
+      0 24px 46px -18px rgba(60, 30, 40, 0.35),
+      0 8px 16px -8px rgba(60, 30, 40, 0.2);
+    cursor: pointer;
+    perspective: 800px;
+  }
+
+  .envelope .body-lines{ position: absolute; inset: 0; overflow: hidden; }
+
+  .envelope .body-lines::before,
+  .envelope .body-lines::after{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    width: 0;
+    height: 0;
+    border-bottom: 112px solid var(--blush);
+    opacity: .55;
+  }
+
+  .envelope .body-lines::before{ left: 0; border-left: 130px solid transparent; }
+  .envelope .body-lines::after{ right: 0; border-right: 130px solid transparent; }
+
+  .flap{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 130px solid transparent;
+    border-right: 130px solid transparent;
+    border-top: 110px solid var(--paper-shadow);
+    transform-origin: top center;
+    transition: transform .7s cubic-bezier(.4,0,.2,1);
+    z-index: 3;
+  }
+
+  .seal{
+    position: absolute;
+    top: 92px;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--wine-deep);
+    box-shadow: 0 3px 8px rgba(60,30,40,.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #f7efe0;
+    font-size: 19px;
+    z-index: 4;
+    transition: opacity .3s ease;
+  }
+
+  .envelope.opening .flap{ transform: rotateX(-165deg); }
+  .envelope.opening .seal{ opacity: 0; }
+
+  #envelopeScreen.hidden{ display: none; }
+
+  .hint{
+    font-family: 'Caveat', cursive;
+    font-size: 1.2rem;
+    color: var(--wine-deep);
+    margin: 0;
+  }
+
+  /* ---------- LETTER ---------- */
+  .stage{
+    position: relative;
+    width: 100%;
+    max-width: 520px;
+    display: none;
+  }
+
+  .stage.visible{ display: block; }
+
+  .letter{
+    position: relative;
+    background: var(--paper);
+    padding: 40px 22px 36px;
+    transform: rotate(-0.4deg);
+    box-shadow:
+      0 2px 0 var(--paper-shadow),
+      0 24px 46px -18px rgba(60, 30, 40, 0.35),
+      0 8px 16px -8px rgba(60, 30, 40, 0.2);
+    clip-path: polygon(
+      0% 1.2%, 4% 0%, 9% 0.8%, 14% 0%, 19% 1%, 24% 0.2%, 29% 1.1%,
+      34% 0%, 39% 0.9%, 44% 0.1%, 49% 1%, 54% 0%, 59% 0.8%, 64% 0.1%,
+      69% 1.1%, 74% 0%, 79% 0.9%, 84% 0.1%, 89% 1%, 94% 0.2%, 100% 1%,
+      100% 99%, 96% 100%, 91% 99.1%, 86% 100%, 81% 99%, 76% 99.8%,
+      71% 99%, 66% 100%, 61% 99.1%, 56% 100%, 51% 99%, 46% 100%,
+      41% 99.2%, 36% 100%, 31% 99%, 26% 99.9%, 21% 99%, 16% 100%,
+      11% 99.1%, 6% 100%, 0% 99%
+    );
+    opacity: 0;
+    animation: rise 1s cubic-bezier(.22,.9,.32,1) .1s forwards;
+  }
+
+  @keyframes rise{
+    from{ opacity: 0; transform: translateY(22px) rotate(-0.4deg); }
+    to{ opacity: 1; transform: translateY(0) rotate(-0.4deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .letter{ animation: none; opacity: 1; }
+    .flap{ transition: none; }
+  }
+
+  .date-line{
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    color: var(--wine-deep);
+    margin: 0 0 14px;
+  }
+
+  h1{
+    font-family: 'Fraunces', serif;
+    font-optical-sizing: auto;
+    font-weight: 500;
+    font-size: clamp(1.7rem, 8vw, 2.2rem);
+    line-height: 1.15;
+    margin: 0 0 18px;
+    color: var(--wine-deep);
+  }
+
+  .counter{
+    font-family: 'Caveat', cursive;
+    font-size: 1.3rem;
+    color: var(--wine);
+    background: var(--blush);
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 3px;
+    margin: 0 0 26px;
+    line-height: 1.3;
+  }
+
+  .letter p{
+    font-size: 1.02rem;
+    line-height: 1.72;
+    color: var(--ink-soft);
+    margin: 0 0 18px;
+  }
+
+  .letter p:first-of-type::first-letter{
+    font-size: 2.4em;
+    font-weight: 600;
+    line-height: .8;
+    float: left;
+    padding: 4px 7px 0 0;
+    color: var(--wine);
+  }
+
+  .closing{ margin-top: 28px; }
+  .closing p{ margin: 0 0 4px; }
+
+  .signature{
+    font-family: 'Caveat', cursive;
+    font-size: 2rem;
+    color: var(--wine-deep);
+    margin-top: 4px;
+  }
+
+  /* ---------- HEART BUTTON ---------- */
+  .heart-row{
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+  }
+
+  .heart-btn{
+    border: none;
+    background: var(--wine);
+    color: #fdf2ef;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px -8px rgba(124,45,64,.6);
+    transition: transform .2s ease;
+  }
+
+  .heart-btn:active{ transform: scale(.9); }
+
+  .love-message{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    z-index: 20;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .love-message span{
+    font-family: 'Caveat', cursive;
+    font-size: clamp(3rem, 16vw, 5rem);
+    color: var(--wine-deep);
+    text-shadow: 0 8px 24px rgba(124,45,64,.25);
+  }
+
+  .love-message.show{ animation: popmsg 2.4s ease forwards; }
+
+  @keyframes popmsg{
+    0%{ opacity: 0; transform: scale(.7); }
+    18%{ opacity: 1; transform: scale(1); }
+    78%{ opacity: 1; transform: scale(1); }
+    100%{ opacity: 0; transform: scale(1.05); }
+  }
+
+  .floating-heart{
+    position: fixed;
+    bottom: -30px;
+    font-size: 20px;
+    color: var(--wine);
+    pointer-events: none;
+    z-index: 15;
+    animation: floatUp 3.2s ease-in forwards;
+  }
+
+  @keyframes floatUp{
+    0%{ transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+    10%{ opacity: 1; }
+    100%{ transform: translateY(-100vh) translateX(var(--drift, 20px)) rotate(30deg); opacity: 0; }
+  }
+
+  /* ---------- MUSIC BUTTON ---------- */
+  .music-btn{
+    position: fixed;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    right: 18px;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    background: var(--wine-deep);
+    color: #f7efe0;
+    font-size: 19px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px -8px rgba(60,30,40,.5);
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .music-btn.playing{ animation: pulse 1.6s ease-in-out infinite; }
+
+  @keyframes pulse{
+    0%, 100%{ box-shadow: 0 10px 20px -8px rgba(60,30,40,.5); }
+    50%{ box-shadow: 0 10px 26px -6px rgba(124,45,64,.75); }
+  }
+
+  @media (min-width: 640px){
+    .letter{ padding: 56px 44px 48px; }
+    h1{ max-width: 12ch; }
+  }
+</style>
+</head>
+<body>
+
+  <div id="envelopeScreen">
+    <div class="envelope" id="envelope">
+      <div class="body-lines"></div>
+      <div class="flap" id="flap"></div>
+      <div class="seal" id="seal">&#10084;</div>
+    </div>
+    <p class="hint">toque no envelope para abrir</p>
+  </div>
+
+  <div class="stage" id="letterStage">
+    <div class="letter">
+
+      <p class="date-line">hoje, um mês de nós</p>
+      <h1>Para a Mari</h1>
+      <p class="counter" id="counter"></p>
+
+      <p>Meu amor, um mês com você e, sem dúvidas, foi o melhor mês da minha vida. Estar ao seu lado é perfeito, leve e amoroso. Eu te amo muito e valorizo cada segundo ao seu lado, porque qualquer momento simples se torna especial quando estou com você.</p>
+
+      <p>É engraçado pensar que, pouco tempo atrás, você era uma pessoa que eu estava conhecendo e eu morria de vergonha, e hoje você virou o amor da minha vida, simplesmente a pessoa mais importante desse mundo pra mim. Você chegou na minha vida e conquistou literalmente meu coração inteiro.</p>
+
+      <p>Você deixou tudo mais bonito e mais colorido com esse seu sorriso e esses olhos perfeitos. Eu fico muito feliz em saber que esse é só o nosso primeiro mês e que ainda temos tanto pra viver juntos. Quero viver muitos momentos com você, sejam eles os mais simples ou os mais especiais, porque estando com você, qualquer coisa fica melhor.</p>
+
+      <p>Eu te amo muito, meu amor. Obrigado por ter aparecido na minha vida e por fazer meus dias tão mais felizes. Espero que esse seja só o primeiro de muitos meses que ainda vamos comemorar juntinhos.</p>
+
+      <div class="closing">
+        <p class="signature">Feliz nosso 1 mês!!!!! &#10084;&#65039;</p>
+        <p>Com carinho,</p>
+        <p class="signature">[seu nome aqui]</p>
+      </div>
+
+      <div class="heart-row">
+        <button class="heart-btn" id="heartBtn" aria-label="Toque no coração">&#10084;</button>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="love-message" id="loveMessage"><span>Te vivo</span></div>
+
+  <button class="music-btn" id="musicBtn" aria-label="Adicionar música">&#9834;</button>
+  <input type="file" accept="audio/*" id="audioInput" style="display:none">
+  <audio id="audioPlayer" loop></audio>
+
+  <script>
+    /* ---- envelope ---- */
+    const envelope = document.getElementById('envelope');
+    const envelopeScreen = document.getElementById('envelopeScreen');
+    const letterStage = document.getElementById('letterStage');
+
+    envelope.addEventListener('click', () => {
+      envelope.classList.add('opening');
+      setTimeout(() => {
+        envelopeScreen.classList.add('hidden');
+        letterStage.classList.add('visible');
+      }, 650);
+    });
+
+    /* ---- contador ao vivo ---- */
+    const counterEl = document.getElementById('counter');
+    const startDate = new Date(2026, 7, 9, 0, 0, 0); // 09/08/2026
+
+    function updateCounter(){
+      const diff = Date.now() - startDate.getTime();
+      if (diff < 0){ counterEl.textContent = 'faltam poucos dias...'; return; }
+      const totalSeconds = Math.floor(diff / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      counterEl.textContent = `${days} dias, ${hours}h ${minutes}m ${seconds}s juntos`;
+    }
+    updateCounter();
+    setInterval(updateCounter, 1000);
+
+    /* ---- coracao / mensagem / confete ---- */
+    const heartBtn = document.getElementById('heartBtn');
+    const loveMessage = document.getElementById('loveMessage');
+
+    function spawnHearts(){
+      const symbols = ['&#10084;', '&#10084;&#65039;', '&#128149;'];
+      for(let i = 0; i < 14; i++){
+        const h = document.createElement('span');
+        h.className = 'floating-heart';
+        h.innerHTML = symbols[Math.floor(Math.random() * symbols.length)];
+        h.style.left = (Math.random() * 90 + 5) + 'vw';
+        h.style.fontSize = (14 + Math.random() * 16) + 'px';
+        h.style.setProperty('--drift', (Math.random() * 80 - 40) + 'px');
+        h.style.animationDuration = (2.6 + Math.random() * 1.4) + 's';
+        document.body.appendChild(h);
+        setTimeout(() => h.remove(), 4200);
+      }
+    }
+
+    heartBtn.addEventListener('click', () => {
+      loveMessage.classList.remove('show');
+      void loveMessage.offsetWidth;
+      loveMessage.classList.add('show');
+      spawnHearts();
+    });
+
+    /* ---- musica ---- */
+    const musicBtn = document.getElementById('musicBtn');
+    const audioInput = document.getElementById('audioInput');
+    const audioPlayer = document.getElementById('audioPlayer');
+    let audioLoaded = false;
+
+    musicBtn.addEventListener('click', () => {
+      if(!audioLoaded){
+        audioInput.click();
+        return;
+      }
+      if(audioPlayer.paused){
+        audioPlayer.play();
+        musicBtn.classList.add('playing');
+      } else {
+        audioPlayer.pause();
+        musicBtn.classList.remove('playing');
+      }
+    });
+
+    audioInput.addEventListener('change', () => {
+      const file = audioInput.files[0];
+      if (!file) return;
+      audioPlayer.src = URL.createObjectURL(file);
+      audioLoaded = true;
+      audioPlayer.play();
+      musicBtn.classList.add('playing');
+    });
+  </script>
+
+</body>
+</html>
